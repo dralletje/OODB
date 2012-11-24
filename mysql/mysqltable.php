@@ -1,5 +1,5 @@
 <?
-import('lib.oopdb.databasetable');
+include('../databasetable.php');
 //import('lib.oopdb.mysql.mysqlrow');
 ## represents a Mysql Table in a Mysql Database
 
@@ -20,6 +20,7 @@ class MysqlTable implements DatabaseTable {
         if (!$me = $this->connection->prepare($sql_query)) {
             die(mysqli_error($this->connection));
         }
+        
         $me->execute();
         $me->bind_result($field_name, $info['type'], $info['null'], $info['key'], $info['default'], $info['extra']);
         $me->store_result();
@@ -47,36 +48,13 @@ class MysqlTable implements DatabaseTable {
         return $this->database;
     }
 
-    ################################
-    ## GET PACKAGE INFO BY NAME
-    ################################
     public function find($infoarray) {    
-        $whereclausule = "";
-        $types = "";
-        $params = array();
         $bind_result_params = array();
         $isfirst = true;
 
-        foreach($infoarray as $key => $value) {
-            if(!array_key_exists(strtolower($key), $this->fields)) {
-                die("wrong row used in '.find()'; row {$key} does not exist in table {$this->name}.");
-            }
-
-            if(gettype($value) == "array") {
-                die("not supported yet: ".xdebug($value));
-            }
-
-            if($isfirst) {
-                $isfirst = false;
-                $whereclausule .= " WHERE `{$key}`=?";
-            } else {
-                $whereclausule .= " && `{$key}`=?";
-            }
-            
-            $type = gettype($value);
-            $types .= substr($type, 0, 1);
-            $params[] = &$infoarray[$key];
-        }
+        $where = $this->database->createWhereClausule($infoarray, $this);
+        $bind_param_args = $where['bind_param'];
+        $whereclausule = $where['where_clausule'];
 
         foreach($this->fields as $key => $value) {
             $bind_result_params[] = &$results[strtolower($key)];
@@ -88,7 +66,8 @@ class MysqlTable implements DatabaseTable {
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
             die(mysqli_error($this->connection));
         }
-        call_user_func_array(array($mysqli_exec, 'bind_param'), $func_args);
+        
+        call_user_func_array(array($mysqli_exec, 'bind_param'), $bind_param_args);
         $mysqli_exec->execute();
         call_user_func_array(array($mysqli_exec, 'bind_result'), $bind_result_params); 
 
@@ -148,7 +127,6 @@ class MysqlTable implements DatabaseTable {
         }
         
         $sql_query = "INSERT INTO `{$this->name}` ({$values_string}) VALUES ({$insert_string})";
-        $func_args = array_merge(array($types), $params);
 
        //xprint($func_args); xprint($sql_query); exit;
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
@@ -166,11 +144,8 @@ class MysqlTable implements DatabaseTable {
 
     public function update($where, $info) {
         $insert_string="";
-        $whereclausule = "";
-        $types = "";
-        $params = array();
-        
         $isfirst = true;
+        
         foreach($info as $field => $value) {
            if(!array_key_exists(strtolower($field),$this->fields)) {
                die("wrong row used in '.insert()'; row {$name} does not exist in table {$this->name}.");
@@ -192,75 +167,35 @@ class MysqlTable implements DatabaseTable {
             $params[] = &$info[$field];
         }
 
-        $isfirst = true;
-        foreach($where as $key => $value) {
-            if(!array_key_exists(strtolower($key), $this->fields)) {
-                die("wrong row used in '.find()'; row {$key} does not exist in table {$this->name}.");
-            }
-
-            if(gettype($value) == "array") {
-                die("not supported yet: ".xdebug($value));
-            }
-
-            if($isfirst) {
-                $isfirst = false;
-                $whereclausule .= "`{$key}` = ?";
-            } else {
-                $whereclausule .= " && `{$key}` = ?";
-            }
-            
-            $type = gettype($value);
-            $types .= substr($type, 0, 1);
-            $params[] = &$where[$key];
-        }
+        $where = $this->database->createWhereClausule($info, $this);
+        $bind_param_args = $where['bind_param'];
+        $whereclausule = $where['where_clausule'];
         
-        $sql_query = "UPDATE `{$this->name}` SET {$insert_string} WHERE {$whereclausule}";
+        $sql_query = "UPDATE `{$this->name}` SET {$insert_string}{$whereclausule}";
         $func_args = array_merge(array($types), $params);
 
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
             die(mysqli_error($this->connection));
         }
-        call_user_func_array(array($mysqli_exec, 'bind_param'), $func_args);
+        
+        call_user_func_array(array($mysqli_exec, 'bind_param'), $bind_param_args);
         $mysqli_exec->execute();
         $id = $this->connection->insert_id;
         return $id;
     }
     
     public function delete($infoarray) {    
-        $whereclausule = "";
-        $types = "";
-        $params = array();
-        $bind_result_params = array();
-        $isfirst = true;
-
-        foreach($infoarray as $key => $value) {
-            if(!array_key_exists(strtolower($key), $this->fields)) {
-                die("wrong row used in '.find()'; row {$key} does not exist in table {$this->name}.");
-            }
-
-            if(gettype($value) == "array") {
-                die("not supported yet: ".xdebug($value));
-            }
-
-            if($isfirst) {
-                $isfirst = false;
-                $whereclausule .= " WHERE `{$key}`=?";
-            } else {
-                $whereclausule .= " && `{$key}`=?";
-            }
-            
-            $type = gettype($value);
-            $types .= substr($type, 0, 1);
-            $params[] = &$infoarray[$key];
-        }
+        $where = $this->database->createWhereClausule($info, $this);
+        $bind_param_args = $where['bind_param'];
+        $whereclausule = $where['where_clausule'];
         
         $sql_query = "DELETE FROM `".$this->name."` ".$whereclausule;
-        $func_args = array_merge(array($types), $params);
 
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
             die(mysqli_error($this->connection));
         }
-        call_user_func_array(array($mysqli_exec, 'bind_param'), $func_args);
+        
+        call_user_func_array(array($mysqli_exec, 'bind_param'), $bind_param_args);
         $mysqli_exec->execute();
 
         $id = $this->connection->insert_id;

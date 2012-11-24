@@ -1,8 +1,8 @@
 <?
-import('lib.oopdb.database');
-import('lib.oopdb.mysql.*');
-## Represents a mysql database
+include('../database.php');
+include('mysqltable.php');
 
+## Represents a mysql database
 class MysqlDatabase implements Database {
   private $connection;
   private $tables = array();
@@ -22,39 +22,40 @@ class MysqlDatabase implements Database {
     return $this->connection;
   }
   
-  public function query($query, $returnarray, $whereargs=array()) {
+    //
+    // Some helper functions
+    //
+  public function createWhereClausule($infoarray, $table) {
     $whereclausule = "";
     $types = "";
     $params = array();
-    $bind_result_params = array();
-    $isfirst = true;
-  
-    foreach($infoarray as $whereargs => $value) {
-            if(gettype($value) == "array") {
-                die("not supported yet");
-            }
+    
+    foreach($infoarray as $key => $value) {
+        if(!array_key_exists(strtolower($key), $table->fields)) {
+            die("wrong row used, row {$key} does not exist in table {$table->name}.");
+        }
 
-            if($isfirst) {
-                $isfirst = false;
-                $whereclausule .= " WHERE `{$key}`=?";
-            } else {
-                $whereclausule .= " && `{$key}`=?";
-            }
-            
-            $type = gettype($value);
-            $types .= substr($type, 0, 1);
-            $params[] = &$infoarray[$key];
-    }
+        if(gettype($value) == "array") {
+            die("not supported yet: ".xdebug($value));
+        }
 
-    foreach($returnarray as $key) {
-        $bind_result_params[] = &$results[strtolower($key)];
+        if($whereclausule === "") {
+            $isfirst = false;
+            $whereclausule .= " WHERE `{$key}`=?";
+        } else {
+            $whereclausule .= " && `{$key}`=?";
+        }
+        
+        $type = gettype($value);
+        $types .= substr($type, 0, 1);
+        $params[] = &$infoarray[$key];
     }
-  
-    if (!$mysqli_exec = $this->connection->prepare($query)) {
-        die(mysqli_error($this->connection));
+    
+    $func_args = array_merge(array($types), $params);
+    
+    return array(
+        'bind_param' => $func_args,
+        'whereclausule' => $whereclausule
     }
-    call_user_func_array(array($mysqli_exec, 'bind_param'), $func_args);
-    $mysqli_exec->execute();
-    call_user_func_array(array($mysqli_exec, 'bind_result'), $bind_result_params); 
   }
 }
