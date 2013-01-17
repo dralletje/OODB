@@ -55,7 +55,7 @@ class MysqlDatabase implements Database {
     
     return array(
         'bind_param' => $func_args,
-        'whereclausule' => $whereclausule
-    }
+        'where_clausule' => $whereclausule
+    );
   }
 }
