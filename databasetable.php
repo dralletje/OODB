@@ -1,4 +1,4 @@
-<?
+<?php 
 ## Databasetable interface
 Interface DatabaseTable {
     # Initializes the table, this is only called by the __get function from the database
@@ -11,8 +11,10 @@ Interface DatabaseTable {
     public function database();
 
     # Search the table for rows matching this where array
-    public function find($where);
-    
+    public function find($where, $sql);
+    # Same as above, but just returns one or null
+    public function findOne($where, $sql);
+        
     # Delete the rows that match this info
     public function delete($info);
     
@@ -22,3 +24,4 @@ Interface DatabaseTable {
     # Set all info given on all rows matching the where array
     public function update($where, $info);
 }
+?>

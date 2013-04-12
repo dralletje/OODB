@@ -1,4 +1,4 @@
-<?
+<?php 
 ## Databaserow interface
 # Not used by now
 Interface DatabaseRow {
@@ -7,3 +7,4 @@ Interface DatabaseRow {
     public function __get($name);
     public function __toString();
 }
+?>

@@ -1,13 +1,15 @@
-<?
-include('../databasetable.php');
+<?php
+include(dirname(__FILE__).'/../databasetable.php');
 //import('lib.oopdb.mysql.mysqlrow');
 ## represents a Mysql Table in a Mysql Database
 
 class MysqlTable implements DatabaseTable {
-    private $fields = array();
+    public $fields = array();
     private $connection;
     private $database;
     private $name;
+    
+    public $lasterror = false;
 
     public function __construct($database, $name) {
        $this->database = $database;
@@ -48,7 +50,9 @@ class MysqlTable implements DatabaseTable {
         return $this->database;
     }
 
-    public function find($infoarray) {    
+    public function find($infoarray=array(), $sql = "") {
+        if($sql !== "") $sql = " ".$sql;
+        
         $bind_result_params = array();
         $isfirst = true;
 
@@ -60,14 +64,13 @@ class MysqlTable implements DatabaseTable {
             $bind_result_params[] = &$results[strtolower($key)];
         }
         
-        $sql_query = "SELECT * FROM `".$this->name."`".$whereclausule;
-        $func_args = array_merge(array($types), $params);
+        $sql_query = "SELECT * FROM `".$this->name."`".$whereclausule.$sql;
 
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
             die(mysqli_error($this->connection));
         }
-        
-        call_user_func_array(array($mysqli_exec, 'bind_param'), $bind_param_args);
+        if(count($infoarray) != 0)
+            call_user_func_array(array($mysqli_exec, 'bind_param'), makeValuesReferenced($bind_param_args));
         $mysqli_exec->execute();
         call_user_func_array(array($mysqli_exec, 'bind_result'), $bind_result_params); 
 
@@ -81,6 +84,14 @@ class MysqlTable implements DatabaseTable {
         }
         $mysqli_exec->close();
         return $roll;
+    }
+    
+    public function findOne($infoarray=array(), $sql="") {
+        $results = $this->find($infoarray, $sql." LIMIT 1");
+        if( count($results) !== 1 ) {
+            return null;
+        }
+        return $results[0];
     }
 
      //################################
@@ -104,7 +115,7 @@ class MysqlTable implements DatabaseTable {
                die("wrong row used in '.insert()'; row {$name} does not exist in table {$this->name}.");
            }
 
-           if($this->fields[$field]['extra']==="auto_increment") {
+           if($this->fields[$field]['extra'] === "auto_increment") {
                continue;
            }
 
@@ -128,15 +139,20 @@ class MysqlTable implements DatabaseTable {
         
         $sql_query = "INSERT INTO `{$this->name}` ({$values_string}) VALUES ({$insert_string})";
 
-       //xprint($func_args); xprint($sql_query); exit;
+        $func_args = array_merge(array($types), $params);
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
-            die(mysqli_error($this->connection));
+            $this->lasterror = mysqli_error($this->connection);
+            return false;
         }
+        
         call_user_func_array(array($mysqli_exec, 'bind_param'), $func_args);
         $mysqli_exec->execute();
 
         $id = $this->connection->insert_id;
-        if($id === 0) { die(mysqli_error($this->connection)); }
+        if($id === 0) {
+            $this->lasterror = mysqli_error($this->connection);
+            return false;
+        }
       
         return $id;
       }
@@ -145,6 +161,7 @@ class MysqlTable implements DatabaseTable {
     public function update($where, $info) {
         $insert_string="";
         $isfirst = true;
+        $types = "";
         
         foreach($info as $field => $value) {
            if(!array_key_exists(strtolower($field),$this->fields)) {
@@ -167,9 +184,11 @@ class MysqlTable implements DatabaseTable {
             $params[] = &$info[$field];
         }
 
-        $where = $this->database->createWhereClausule($info, $this);
+        $where = $this->database->createWhereClausule($where, $this);
         $bind_param_args = $where['bind_param'];
         $whereclausule = $where['where_clausule'];
+        
+        $bind_param_args = array_merge(array($types . $bind_param_args[0]), $params, array_slice($bind_param_args, 1));
         
         $sql_query = "UPDATE `{$this->name}` SET {$insert_string}{$whereclausule}";
         $func_args = array_merge(array($types), $params);
@@ -178,7 +197,7 @@ class MysqlTable implements DatabaseTable {
             die(mysqli_error($this->connection));
         }
         
-        call_user_func_array(array($mysqli_exec, 'bind_param'), $bind_param_args);
+        call_user_func_array(array($mysqli_exec, 'bind_param'), makeValuesReferenced($bind_param_args));
         $mysqli_exec->execute();
         $id = $this->connection->insert_id;
         return $id;
@@ -204,4 +223,12 @@ class MysqlTable implements DatabaseTable {
 
 }
 
+function makeValuesReferenced($arr){
+    $refs = array();
+    foreach($arr as $key => $value)
+        $refs[$key] = &$arr[$key];
+    return $refs;
 
+}
+
+?>

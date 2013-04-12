@@ -1,4 +1,4 @@
-<?
+<?php
 ## Database interface
 
 Interface Database {
@@ -11,3 +11,4 @@ Interface Database {
   # Returns the raw connection made
   public function connection();
 }
+?>

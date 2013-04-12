@@ -1,4 +1,4 @@
-<?
+<?php
 ## Databaserow interface
 class MysqlRow {
     private $info = array();
@@ -21,3 +21,4 @@ class MysqlRow {
     }
     public function __toString() { return xreturn($info); }
 }
+?>

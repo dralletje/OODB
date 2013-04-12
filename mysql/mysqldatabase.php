@@ -1,6 +1,6 @@
-<?
-include('../database.php');
-include('mysqltable.php');
+<?php 
+include(dirname(__FILE__).'/../database.php');
+include(dirname(__FILE__).'/mysqltable.php');
 
 ## Represents a mysql database
 class MysqlDatabase implements Database {
@@ -59,3 +59,4 @@ class MysqlDatabase implements Database {
     );
   }
 }
+?>
