@@ -1,25 +1,34 @@
 Object Oriented Database
 ====
 
-Bored of all the semi object oriented database handlers in php, 
-and inspired by the fully object oriented working of mongoDB in nodejs I made OODB.
-It's not a real database, just a class to access them easily and in a readable way.
+Bored of all the semi object oriented database handlers in php,  
+and inspired by the fully object oriented working of mongoDB in nodejs, I made OODB.  
+It's not a real database, just a class to access them easily and in a readable way.  
 
 Creating the connection and the table
 ====
 
-You just import the kind of database you want first, when I want a mysql database I use:
+You just import the OODB main class.  
+This will help you to import the database of the type you want to use. 
 ```php
-include('OODB/mysql/mysqldatabase.php');
+include('OODB/OODB.php');
+```  
+***
+Now you are ready to instantiate the database handler.  
+In this example I'm connecting to a Mysql database. As of PHP 5.3 you can use
+```php
+$database = OODB::mysql($host, $database, $user, $password);
 ```
-Now you are ready to instantiate the database handler.
+But people with a lower PHP version should use
 ```php
-$database = new MysqlDatabase($host, $database, $user, $password);
+$database = OODB::get("mysql", $host, $database, $user, $password);
 ```
 Note that creating the handler differs from creating a mysqli handler, which is
 ```php
 $database = new mysqli($host, $user, $password, $database); # just the order of arguments
 ```
+***
+
 After you created the handler, you can select a table in the database.
 ```php
 $table = $database->tablename;
