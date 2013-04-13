@@ -10,5 +10,8 @@ Interface Database {
   
   # Returns the raw connection made
   public function connection();
+  
+  # Create a table
+  public function create($name, $info, $additional);
 }
 ?>

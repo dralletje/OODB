@@ -4,23 +4,34 @@ include(dirname(__FILE__).'/mysqltable.php');
 
 ## Represents a mysql database
 class MysqlDatabase implements Database {
-  private $connection;
-  private $tables = array();
+    private $connection;
+    private $tables = array();
 
-  public function __construct($host, $base, $user, $pass) {
-    $this->connection = new mysqli($host, $user, $pass, $base);
-  }
-
-  public function __get($tablename) {
-    if(!array_key_exists($tablename, $this->tables)) {
-      $this->tables[$tablename] = new MysqlTable($this, $tablename);
+    public function __construct($host, $base, $user, $pass) {
+        $this->connection = new mysqli($host, $user, $pass, $base);
     }
-    return $this->tables[$tablename];
-  }
+
+    public function __get($tablename) {
+        if(!array_key_exists($tablename, $this->tables)) {
+            $this->tables[$tablename] = new MysqlTable($this, $tablename);
+        }
+        return $this->tables[$tablename];
+    }
   
-  public function connection() {
-    return $this->connection;
-  }
+    public function connection() {
+        return $this->connection;
+    }
+    
+    public function create($name, $info, $additional) {
+        $query = "CREATE TABLE %s (%s);";
+        $rows = array();
+        
+        foreach(array_keys($info) as $row) {
+            $rows[] = $row ." ". $info[$row];
+        }
+        $sql = sprintf($query, $name, implode(", ", $rows));
+        return $this->connection->query($sql);
+    }
   
     //
     // Some helper functions
@@ -58,5 +69,9 @@ class MysqlDatabase implements Database {
         'where_clausule' => $whereclausule
     );
   }
+}
+
+function isAssoc($arr) {
+    return array_keys($arr) !== range(0, count($arr) - 1);
 }
 ?>
