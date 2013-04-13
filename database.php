@@ -3,7 +3,7 @@
 
 Interface Database {
   # Creates a new database connection
-  public function __construct($host, $table, $user, $pass);
+  public function __construct($host, $database, $user, $pass);
   
   # Get the table you want to query on
   public function __get($tablename);
