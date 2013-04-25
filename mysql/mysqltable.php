@@ -223,12 +223,14 @@ class MysqlTable implements DatabaseTable {
 
 }
 
-function makeValuesReferenced($arr){
-    $refs = array();
-    foreach($arr as $key => $value)
-        $refs[$key] = &$arr[$key];
-    return $refs;
+if(!function_exists("makeValuesReferenced")) {
+    function makeValuesReferenced($arr){
+        $refs = array();
+        foreach($arr as $key => $value)
+            $refs[$key] = &$arr[$key];
+        return $refs;
 
+    }
 }
 
 ?>

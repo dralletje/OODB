@@ -71,7 +71,9 @@ class MysqlDatabase implements Database {
   }
 }
 
-function isAssoc($arr) {
-    return array_keys($arr) !== range(0, count($arr) - 1);
+if(!function_exists("isAssoc")) {
+    function isAssoc($arr) {
+        return array_keys($arr) !== range(0, count($arr) - 1);
+    }
 }
 ?>
