@@ -1,5 +1,4 @@
 <?php 
-include(dirname(__FILE__).'/../database.php');
 include(dirname(__FILE__).'/mysqltable.php');
 
 ## Represents a mysql database

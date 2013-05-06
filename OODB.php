@@ -5,8 +5,13 @@ class OODB {
     
     // Found no better way than a static method :(
     public static function get($type, $host, $database, $user, $pass) {
-        $file = dirname(__FILE__).'/'.$type.'/'.$type.'database.php';
+        $dir = dirname(__FILE__);
+        $file = $dir.'/'.$type.'/'.$type.'database.php';
         if(file_exists($file)) {
+            // Include the interfaces
+            include_once($dir.'/database.php');
+            include_once($dir.'/databasetable.php');
+
             include_once($file);
             $class = ucfirst($type).'Database';
             return new $class($host, $database, $user, $pass);

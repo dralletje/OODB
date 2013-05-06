@@ -1,6 +1,4 @@
 <?php
-include(dirname(__FILE__).'/../databasetable.php');
-//import('lib.oopdb.mysql.mysqlrow');
 ## represents a Mysql Table in a Mysql Database
 
 class MysqlTable implements DatabaseTable {
