@@ -7,7 +7,7 @@ class OODB {
     public static function get($type, $host, $database, $user, $pass) {
         $file = dirname(__FILE__).'/'.$type.'/'.$type.'database.php';
         if(file_exists($file)) {
-            include($file);
+            include_once($file);
             $class = ucfirst($type).'Database';
             return new $class($host, $database, $user, $pass);
         } else {
