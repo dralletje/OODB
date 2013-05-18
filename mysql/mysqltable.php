@@ -1,16 +1,18 @@
 <?php
 ## represents a Mysql Table in a Mysql Database
 
-class MysqlTable implements DatabaseTable {
+include('sqlhelper.php');
+
+class MysqlTable extends DatabaseTable {
     public $fields = array();
+    
     private $connection;
-    private $database;
     private $name;
     
     public $lasterror = false;
 
     public function __construct($database, $name) {
-       $this->database = $database;
+       parent::setDatabase($database);
        $this->connection = $this->database->connection();
        $this->name = $name;
 
@@ -44,30 +46,34 @@ class MysqlTable implements DatabaseTable {
     public function info() {
         return $this->fields;
     }
-    public function database() {
-        return $this->database;
-    }
-
-    public function find($infoarray=array(), $sql = "") {
-        if($sql !== "") $sql = " ".$sql;
-        
-        $bind_result_params = array();
-        $isfirst = true;
-
-        $where = $this->database->createWhereClausule($infoarray, $this);
+    
+    /* Parse the OODB cursor and execute it */
+    public function executeOodbCursor($cursor) {   
+        /* Where */
+        $where = SqlHelper::where($cursor->where, $this);
         $bind_param_args = $where['bind_param'];
         $whereclausule = $where['where_clausule'];
 
+        /* Limit */
+        $limit = SqlHelper::limit($cursor->limit, $this);
+        
+        /* Sort */
+        $sort = SqlHelper::sort($cursor->sort, $this);
+
+        /* To get the results */
+        $bind_result_params = array();
         foreach($this->fields as $key => $value) {
             $bind_result_params[] = &$results[strtolower($key)];
         }
         
-        $sql_query = "SELECT * FROM `".$this->name."`".$whereclausule.$sql;
+        $sql_query = "SELECT * FROM `".$this->name."`".$whereclausule.$limit.$sort;
+
+        echo $sql_query;
 
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
             die(mysqli_error($this->connection));
         }
-        if(count($infoarray) != 0)
+        if(count($cursor->where) != 0)
             call_user_func_array(array($mysqli_exec, 'bind_param'), makeValuesReferenced($bind_param_args));
         $mysqli_exec->execute();
         call_user_func_array(array($mysqli_exec, 'bind_result'), $bind_result_params); 
@@ -83,16 +89,8 @@ class MysqlTable implements DatabaseTable {
         $mysqli_exec->close();
         return $roll;
     }
-    
-    public function findOne($infoarray=array(), $sql="") {
-        $results = $this->find($infoarray, $sql." LIMIT 1");
-        if( count($results) !== 1 ) {
-            return null;
-        }
-        return $results[0];
-    }
 
-     //################################
+    //################################
     //## Insert a value into the database
     //################################
     public function insert($info_placeholder) {
@@ -182,7 +180,7 @@ class MysqlTable implements DatabaseTable {
             $params[] = &$info[$field];
         }
 
-        $where = $this->database->createWhereClausule($where, $this);
+        $where = SqlHelper::createWhereClausule($where, $this);
         $bind_param_args = $where['bind_param'];
         $whereclausule = $where['where_clausule'];
         
