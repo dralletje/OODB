@@ -3,7 +3,7 @@
 
 include('sqlhelper.php');
 
-class MysqlTable extends DatabaseTable {
+class MysqlTable extends OodbDatabaseTable {
     public $fields = array();
     
     private $connection;

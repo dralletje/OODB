@@ -1,7 +1,7 @@
 <?php
 ## Database interface
 
-abstract class Database {
+abstract class OodbDatabase {
     # Creates a new database connection
     public abstract function __construct($host, $database, $user, $pass);
     

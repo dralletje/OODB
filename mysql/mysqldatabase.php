@@ -1,8 +1,7 @@
 <?php 
-include(dirname(__FILE__).'/mysqltable.php');
 
 ## Represents a mysql database
-class MysqlDatabase extends Database {
+class MysqlDatabase extends OodbDatabase {
     private $connection;
     private $tables = array();
 

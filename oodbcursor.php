@@ -6,7 +6,7 @@ class AlreadyExecutedException extends Exception {
     protected $message = "OODB query already executed";
 }
 
-class OodbCursor extends iArray {
+class OodbCursor extends OodbArray {
     public $where = array();
     public $limit = 0;
     public $sort = array();
@@ -52,12 +52,10 @@ class OodbCursor extends iArray {
     
     /* Get a index, so execute the query */
     public function __get($name) {
-        $this->ensureResults();
         return parent::__get($name);
     }
     
     public function __isset($name) {
-        $this->ensureResults();
         return parent::__isset($name);
     }
     
@@ -67,6 +65,10 @@ class OodbCursor extends iArray {
     }
     public function __set($var, $var2) {
         return false;
+    }
+    
+    protected function onCall() {
+        $this->ensureResults();
     }
 }
 

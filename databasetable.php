@@ -1,6 +1,6 @@
 <?php 
 ## Databasetable interface
-abstract class DatabaseTable {
+abstract class OodbDatabaseTable {
     # Initializes the table, this is only called by the __get function from the database
     public abstract function __construct($database, $name);
 

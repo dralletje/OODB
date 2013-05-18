@@ -4,7 +4,7 @@
 
 include_once('lib/iarray.php');
 
-class OodbComparator extends iArray {
+class OodbComparator extends OodbArray {
     protected $comparisons = array();
 
     public function __construct() {
@@ -13,7 +13,6 @@ class OodbComparator extends iArray {
     
     public function __get($name) {
         $var = parent::__get($name);
-        echo "$name => $var <br />";
         return $var;
     }
 
