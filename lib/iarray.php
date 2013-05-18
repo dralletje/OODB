@@ -51,36 +51,30 @@ class OodbArray implements arrayaccess, Iterator {
     
     // Iterator methods
     public function current() {
-        echo "stuff";
         $keys = $this->arrayKeys();
         return $this->__get( $keys[ $this->pointer ] );
     }
     
     public function valid() {
         $this->isCalled();
-        echo "stuff #1: " . ( count($this->container) > $this->pointer ? "true" : "false" );
         return ( count($this->container) > $this->pointer ); 
     }
     
     
     public function key() {
-        echo "stuff2";
         $this->isCalled();
         $keys = $this->arrayKeys();
         return $keys[ $this->pointer ];
     }
     public function next() {
-        echo "stuff3";
         $this->isCalled();
         $this->pointer++;
     }
     public function rewind() {
-        echo "stuff4";
         $this->isCalled();
         $this->pointer = 0;
     }
     public function seek($position) {
-        echo "stuff5";
         $this->isCalled();
         $this->pointer = $position;
     }
