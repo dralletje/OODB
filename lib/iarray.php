@@ -79,6 +79,7 @@ class OodbArray implements arrayaccess, Iterator {
         $this->pointer = $position;
     }
     
+    
     /* Internal method to create sort of events */
     private function isCalled() {
         if( !method_exists( $this, "onCall" ) ) return;
@@ -87,6 +88,50 @@ class OodbArray implements arrayaccess, Iterator {
     
     private function arrayKeys() {
         return array_keys( $this->container );
+    }
+    
+    
+    /* Underscore JS like functions */
+    /* These functions MAY NOT use eachother, so they are fully independent */
+    public function each($fn) {
+        foreach( $this->container as $key => $value ) {
+            $fn($key, $value, $this->container);
+        }
+    }
+    
+    public function map($fn) {
+        $new = array();
+        foreach( $this->container as $key => $value ) {
+            $new[] = $fn($key, $value, $this->container);
+        }
+        return $new;
+    }
+    
+    public function reduce($fn, $memo) {
+        foreach( $this->container as $key => $value ) {
+            $memo = $fn($memo, $value, $key, $this->container);
+        }
+        return $memo;
+    }
+    
+    public function filter($fn = null) {
+        if( !is_callable($fn) ) $fn = function($var) { return (bool) $var; };
+        $new = array();
+        foreach( $this->container as $key => $value ) {
+            if( !$fn($value, $key, $this->container) ) continue;
+            $new[ $key ] = $value;
+        }
+        return $new;
+    }
+        
+    public function reject($fn = null) { // Opposite of filter
+        if( !is_callable($fn) ) $fn = function($var) { return (bool) $var; };
+        $new = array();
+        foreach( $this->container as $key => $value ) {
+            if( $fn($value, $key, $this->container) ) continue;
+            $new[ $key ] = $value;
+        }
+        return $new;
     }
 }
 ?>
