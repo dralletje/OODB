@@ -68,8 +68,6 @@ class MysqlTable extends DatabaseTable {
         
         $sql_query = "SELECT * FROM `".$this->name."`".$whereclausule.$limit.$sort;
 
-        echo $sql_query;
-
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
             die(mysqli_error($this->connection));
         }

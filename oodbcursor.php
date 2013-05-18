@@ -1,6 +1,6 @@
 <?php
 
-include('lib/iarray.php');
+include_once('lib/iarray.php');
 
 class AlreadyExecutedException extends Exception {
     protected $message = "OODB query already executed";

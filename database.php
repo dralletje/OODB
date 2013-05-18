@@ -12,7 +12,7 @@ abstract class Database {
     public abstract function create($name, $info, $additional);
     
 
-    # Get the table you want to query on
+    /* Get the table you want to query on */
     private $tableClass;
     private $tables = array();
     public function setTableClass($class) {
@@ -24,6 +24,18 @@ abstract class Database {
             $this->tables[$tablename] = new $this->tableClass($this, $tablename);
         }
         return $this->tables[$tablename];
+    }
+    
+    
+    /* Get a comparator, with static methods */
+    public static function c($comparator, $value) {
+        $oodbcomparator = new OodbComparator();
+        return $oodbcomparator->$comparator($value);
+    }
+    
+    public static function __callStatic($comparator, $arguments) {
+        if( !isset($arguments[0]) ) return;
+        return self::c($comparator, $arguments[0]);
     }
 }
 ?>

@@ -18,6 +18,11 @@ class SqlHelper {
             die("wrong row used, row {$key} does not exist in table {$table->name}.");
         }
 
+        /* If it is a OodbComparator object, get the comparations */
+        if( gettype($comparearray) == "object" ) {
+            $comparearray = $comparearray->raw();
+        }
+
         if(gettype($comparearray)  != "array") {
             $comparearray = array(
                 '$is' => $comparearray
@@ -59,6 +64,13 @@ class SqlHelper {
         /* If it is an non existing comparator */
         if( !array_key_exists($comparator, $comparators) ) {
             die("{$comparator} is an invalid comparator.");
+        }
+        
+        /* Non existing value type */
+        if( ! in_array(gettype($value), array(
+            "integer", "double", "string"
+        )) ) {
+            die("Variables type " . gettype($value) . " not yet supported");
         }
 
         $mysqlcomparator = $comparators[ $comparator ];

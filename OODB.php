@@ -10,6 +10,7 @@ class OODB {
         if(file_exists($file)) {
             // Include the parents
             include_once($dir.'/oodbcursor.php');
+            include_once($dir.'/oodbcomparator.php');
         
             // Include the interfaces
             include_once($dir.'/database.php');
