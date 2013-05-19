@@ -91,8 +91,7 @@ class MysqlTable extends DatabaseTable {
     //################################
     //## Insert a value into the database
     //################################
-    public function insert($info_placeholder) {
-      foreach(func_get_args() as $key => $info) {
+    public function insert($info) {
         if(gettype($info) != "array") {
             die("Expected array, but got '{$info}' as argument {$key} of '.insert()'");
         }
@@ -149,7 +148,6 @@ class MysqlTable extends DatabaseTable {
         }
       
         return $id;
-      }
     }
 
     public function update($where, $info) {
