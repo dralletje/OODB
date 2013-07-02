@@ -134,9 +134,25 @@ echo "The age of ".$markus['firstname']." ".$markus['lastname']." is ".$markus['
 Easy as that!
 I know the $markus['firstname'] and lastname are a bit expendable, but I just want to show how all data get's into a clean, easy to use array.
 
-Not perfect, not yet!
-====
+Imagine you want to remove everybody older than 18 years old.
+That would be done like this:
 
-The only way you can match selects, updates and deletes right now is using ==.
-Not yet >, <, or anything like that. Do you know a readable way to implement that? Tell me!
-This library is far from complete. It's really only basics now.
+```php
+/* Note how I use $database here again, it's for easier comparisons */
+$table->delete(array(
+  'age' => $database::gte(18)
+));
+```
+
+Or without the $database variable, it works like mongodb
+
+
+```php
+$table->delete(array(
+  'age' => array('$gte' => 18)
+));
+```
+
+Documentation
+===
+I'm writing a [api reference](https://github.com/dralletje/OODB/wiki/Api-reference) soon :)
