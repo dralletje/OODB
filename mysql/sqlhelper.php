@@ -68,7 +68,7 @@ class SqlHelper {
         
         /* Non existing value type */
         if( ! in_array(gettype($value), array(
-            "integer", "double", "string"
+            "integer", "double", "string", "NULL",
         )) ) {
             die("Variables type " . gettype($value) . " not yet supported");
         }

@@ -42,8 +42,9 @@ class MongoTable extends OodbDatabaseTable {
     }
 
 
-    public function insert($info_placeholder) {
-        die("sorry");
+    public function insert($info) {
+        $this->collection->insert($info);
+        return $info['_id'];
     }
 
     public function update($where, $info) {

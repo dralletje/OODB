@@ -90,16 +90,24 @@ class OodbArray implements arrayaccess, Iterator {
         return array_keys( $this->container );
     }
     
+    private function fn($fn) {
+        if( !is_callable($fn) ) return function($x) { return $x; };
+        return $fn;
+    }
+    
     
     /* Underscore JS like functions */
-    /* These functions MAY NOT use eachother, so they are fully independent */
+    // These functions MAY NOT use eachother, so they are fully independent.
+    // All MAY NOT modify the origional array.
     public function each($fn) {
+        $fn = $this->fn($fn);
         foreach( $this->container as $key => $value ) {
             $fn($key, $value, $this->container);
         }
     }
     
     public function map($fn) {
+        $fn = $this->fn($fn);
         $new = array();
         foreach( $this->container as $key => $value ) {
             $new[] = $fn($key, $value, $this->container);
@@ -115,7 +123,7 @@ class OodbArray implements arrayaccess, Iterator {
     }
     
     public function filter($fn = null) {
-        if( !is_callable($fn) ) $fn = function($var) { return (bool) $var; };
+        $fn = $this->fn($fn);
         $new = array();
         foreach( $this->container as $key => $value ) {
             if( !$fn($value, $key, $this->container) ) continue;
@@ -125,7 +133,7 @@ class OodbArray implements arrayaccess, Iterator {
     }
         
     public function reject($fn = null) { // Opposite of filter
-        if( !is_callable($fn) ) $fn = function($var) { return (bool) $var; };
+        $fn = $this->fn($fn);
         $new = array();
         foreach( $this->container as $key => $value ) {
             if( $fn($value, $key, $this->container) ) continue;
@@ -133,5 +141,13 @@ class OodbArray implements arrayaccess, Iterator {
         }
         return $new;
     }
+    
+    public function toArray() {
+        return iterator_to_array($this->container);
+    }
+}
+
+if( ! class_exists("iArray") ) {
+    class_alias("OodbArray", "iArray");
 }
 ?>
