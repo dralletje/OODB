@@ -20,7 +20,7 @@ class MysqlTable extends OodbDatabaseTable {
        $sql_query = "DESCRIBE {$name}";
 
         if (!$me = $this->connection->prepare($sql_query)) {
-            die(mysqli_error($this->connection));
+            throw new Exception(mysqli_error($this->connection));
         }
         
         $me->execute();
@@ -29,7 +29,7 @@ class MysqlTable extends OodbDatabaseTable {
             
         if($me->num_rows === 0) {
             $me->close();
-            die("The requested table {$name} does not exist, or there is a mysqli error: '".mysqli_error($this->connection)."'");
+            throw new Exception("The requested table {$name} does not exist, or there is a mysqli error: '".mysqli_error($this->connection)."'");
         }
             
         while($me->fetch()) {
@@ -69,7 +69,7 @@ class MysqlTable extends OodbDatabaseTable {
         $sql_query = "SELECT * FROM `".$this->name."`".$whereclausule.$limit.$sort;
 
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
-            die(mysqli_error($this->connection));
+            throw new Exception(mysqli_error($this->connection));
         }
         if(count($cursor->where) != 0)
             call_user_func_array(array($mysqli_exec, 'bind_param'), makeValuesReferenced($bind_param_args));
@@ -94,7 +94,7 @@ class MysqlTable extends OodbDatabaseTable {
     public function insert($info_placeholder) {
       foreach(func_get_args() as $key => $info) {
         if(gettype($info) != "array") {
-            die("Expected array, but got '{$info}' as argument {$key} of '.insert()'");
+            throw new Exception("Expected array, but got '{$info}' as argument {$key} of '.insert()'");
         }
 
         $insert_string="";
@@ -106,7 +106,7 @@ class MysqlTable extends OodbDatabaseTable {
 
         foreach($info as $field => $value) {
            if(!array_key_exists(strtolower($field),$this->fields)) {
-               die("wrong row used in '.insert()'; row {$name} does not exist in table {$this->name}.");
+               throw new Exception("wrong row used in '.insert()'; row {$name} does not exist in table {$this->name}.");
            }
 
            if($this->fields[$field]['extra'] === "auto_increment") {
@@ -114,7 +114,7 @@ class MysqlTable extends OodbDatabaseTable {
            }
 
             if(gettype($value) == "array") {
-                die("not supported yet: ".xdebug($value));
+                throw new Exception("not supported yet: ".xdebug($value));
             }
 
             if($isfirst) {
@@ -159,11 +159,11 @@ class MysqlTable extends OodbDatabaseTable {
         
         foreach($info as $field => $value) {
            if(!array_key_exists(strtolower($field),$this->fields)) {
-               die("wrong row used in '.insert()'; row {$name} does not exist in table {$this->name}.");
+               throw new Exception("wrong row used in '.insert()'; row {$name} does not exist in table {$this->name}.");
            }
 
             if(gettype($value) == "array") {
-                die("not supported yet: ".xdebug($value));
+                throw new Exception("not supported yet: ".xdebug($value));
             }
 
             if($isfirst) {
@@ -188,7 +188,7 @@ class MysqlTable extends OodbDatabaseTable {
         $func_args = array_merge(array($types), $params);
 
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
-            die(mysqli_error($this->connection));
+            throw new Exception(mysqli_error($this->connection));
         }
         
         call_user_func_array(array($mysqli_exec, 'bind_param'), makeValuesReferenced($bind_param_args));
@@ -205,7 +205,7 @@ class MysqlTable extends OodbDatabaseTable {
         $sql_query = "DELETE FROM `".$this->name."` ".$whereclausule;
 
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
-            die(mysqli_error($this->connection));
+            throw new Exception(mysqli_error($this->connection));
         }
         
         call_user_func_array(array($mysqli_exec, 'bind_param'), $bind_param_args);

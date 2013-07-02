@@ -21,7 +21,7 @@ class MongoDatabase extends OodbDatabase {
     }
     
     public function create($name, $info, $additional) {
-        die("Sorry");
+        throw new Exception("Sorry");
     }
 }
 ?>

@@ -48,11 +48,11 @@ class MongoTable extends OodbDatabaseTable {
     }
 
     public function update($where, $info) {
-        die("sorry");
+        throw new Exception("Sorry, not yet implemented.");
     }
     
     public function delete($where) {    
-        die("sorry");
+        throw new Exception("Sorry, not yet implemented.");
     }
 
 }

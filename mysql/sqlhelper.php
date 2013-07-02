@@ -15,7 +15,7 @@ class SqlHelper {
     
     foreach($where as $key => $comparearray) {
         if(!array_key_exists(strtolower($key), $table->fields)) {
-            die("wrong row used, row {$key} does not exist in table {$table->name}.");
+            throw new Exception("wrong row used, row {$key} does not exist in table {$table->name}.");
         }
 
         /* If it is a OodbComparator object, get the comparations */
@@ -31,7 +31,7 @@ class SqlHelper {
         
         // Can't handle multie comparations at once yet
         if( count($comparearray) !== 1 ) {
-            die("Ugh :(");
+            throw new Exception("Ugh :( Can't handle multiple comparations for now.");
         }
         
         // Map $comp to mysql comparators
@@ -56,21 +56,21 @@ class SqlHelper {
         
         /* If it's not an comparator????? */
         if( substr($comparator, 0, 1) !== "$" ) {
-            die("stuff");
+            throw new Exception("Comparator has to start with $ ({$comparator})");
         }
         
         $comparator = substr($comparator, 1);                              
         
         /* If it is an non existing comparator */
         if( !array_key_exists($comparator, $comparators) ) {
-            die("{$comparator} is an invalid comparator.");
+            throw new Exception("{$comparator} is an invalid comparator.");
         }
         
         /* Non existing value type */
         if( ! in_array(gettype($value), array(
             "integer", "double", "string", "NULL",
         )) ) {
-            die("Variables type " . gettype($value) . " not yet supported");
+            throw new Exception("Variables type " . gettype($value) . " not yet supported");
         }
 
         $mysqlcomparator = $comparators[ $comparator ];
@@ -108,7 +108,7 @@ class SqlHelper {
     $string = " ORDER BY";
     foreach($sort as $critism => $order) {
       if(!array_key_exists(strtolower($critism), $table->fields)) {
-          die("wrong row used, row {$key} does not exist in table {$table->name}.");
+          throw new Exception("wrong row used, row {$key} does not exist in table {$table->name}.");
       }
     
       $orderstring = "ASC";
