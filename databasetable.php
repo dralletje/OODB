@@ -27,9 +27,7 @@ abstract class OodbDatabaseTable {
     // Just return one result
     public function findOne($where=array()) {
         $results = $this->find($where)->limit(1);
-        if( count($results) !== 1 ) {
-            return null;
-        }
+        if( iterator_count($results) !== 1 ) return null;
         return $results[0];
     }
     
