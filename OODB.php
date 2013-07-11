@@ -5,6 +5,14 @@ class OODB {
     
     // Found no better way than a static method :(
     public static function get($type, $host, $database, $user=null, $pass=null) {
+        $splitted = explode(":", $host);
+        $host = $splitted[0];
+        
+        $port = null;
+        if( count($splitted) === 2) $port = $splitted[1];
+        
+        if( count($splitted) > 2) new Exception("Bad host $host.");
+    
         $dir = dirname(__FILE__);
         $file = $dir.'/'.$type.'/'.$type;
         
@@ -22,7 +30,7 @@ class OODB {
             include_once($file.'table.php');
             
             $class = ucfirst($type).'Database';
-            return new $class($host, $database, $user, $pass);
+            return new $class($host, $database, $user, $pass, $port);
         } else {
             return false;
         }

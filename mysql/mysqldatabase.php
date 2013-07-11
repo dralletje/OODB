@@ -5,9 +5,11 @@ class MysqlDatabase extends OodbDatabase {
     private $connection;
     private $tables = array();
 
-    public function __construct($host, $base, $user, $pass) {
+    public function __construct($host, $base, $user, $pass, $port) {
+        if( $port === null ) $port = 3306;
+               
         parent::setTableClass("MysqlTable");
-        $this->connection = new mysqli($host, $user, $pass, $base);
+        $this->connection = new mysqli($host, $user, $pass, $base, (int) $port);
     }
   
     public function connection() {

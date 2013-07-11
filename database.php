@@ -3,7 +3,7 @@
 
 abstract class OodbDatabase {
     # Creates a new database connection
-    public abstract function __construct($host, $database, $user, $pass);
+    public abstract function __construct($host, $database,$user, $pass, $port);
     
     # Returns the raw connection made
     public abstract function connection();
