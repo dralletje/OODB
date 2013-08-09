@@ -1,5 +1,5 @@
 {
-    "name": "Dral/OODB",
+    "name": "dral/oodb",
     "type": "library",
     "description": "Easy Object Oriented Database Handler, like mongoDB.",
     "keywords": ["database", "mysql", "OOP", "OO", "mongo", "nosql"],
