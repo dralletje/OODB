@@ -22,8 +22,7 @@ class OODB {
             include_once($dir.'/oodbcomparator.php');
         
             // Include the interfaces
-            include_once($dir.'/database.php');
-            include_once($dir.'/databasetable.php');
+            include_once($dir.'/oodbdatabase.php');
 
             // Include database classes
             include_once($file.'database.php');
