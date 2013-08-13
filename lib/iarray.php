@@ -145,7 +145,7 @@ class OodbArray implements arrayaccess, Iterator {
     
     public function toArray() {
         $this->isCalled();
-        return iterator_to_array($this->container);
+        return $this->container;
     }
     
     /* My own additions */
