@@ -5,7 +5,7 @@ class MongoDatabase extends OodbDatabase {
     private $connection;
     private $tables = array();
 
-    public function __construct($host, $base, $user, $pass) {
+    public function __construct($host, $base, $user, $pass, $port=null) {
         parent::setTableClass("MongoTable");
         
         $auth = "";

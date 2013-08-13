@@ -50,6 +50,12 @@ class OodbCursor extends OodbArray {
         $this->executed = true;
     }
     
+    /* Just a public alias for ensureResults */
+    public function run() {
+      ensureResults();
+      return $this;
+    }
+    
     /* Get a index, so execute the query */
     public function __get($name) {
         return parent::__get($name);

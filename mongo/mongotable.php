@@ -1,8 +1,6 @@
 <?php
 ## represents a Mysql Table in a Mysql Database
 
-include('sqlhelper.php');
-
 class MongoTable extends OodbDatabaseTable {
     private $connection;
     private $name;

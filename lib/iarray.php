@@ -11,10 +11,7 @@ class OodbArray implements arrayaccess, Iterator {
     // Object get methods
     public function __get($name) {
         $this->isCalled();
-        if(!array_key_exists($name, $this->container)) {
-            return null;
-        }
-        
+        if(!array_key_exists($name, $this->container)) return null;
         return $this->container[$name];
     }
     
@@ -36,16 +33,16 @@ class OodbArray implements arrayaccess, Iterator {
     
     /* array to object mapping */
     public function offsetSet($offset, $value) {
-        $this->__set($offset, $value);
+        return $this->__set($offset, $value);
     }
     public function offsetExists($offset) {
-        $this->__isset($offset);
+        return $this->__isset($offset);
     }
     public function offsetUnset($offset) {
-        $this->__unset($offset);
+        return $this->__unset($offset);
     }
     public function offsetGet($offset) {
-        $this->__get($offset);
+        return $this->__get($offset);
     }
     
     
@@ -95,11 +92,11 @@ class OodbArray implements arrayaccess, Iterator {
         return $fn;
     }
     
-    
     /* Underscore JS like functions */
     // These functions MAY NOT use eachother, so they are fully independent.
     // All MAY NOT modify the origional array.
     public function each($fn) {
+        $this->isCalled();
         $fn = $this->fn($fn);
         foreach( $this->container as $key => $value ) {
             $fn($key, $value, $this->container);
@@ -107,6 +104,7 @@ class OodbArray implements arrayaccess, Iterator {
     }
     
     public function map($fn) {
+        $this->isCalled();
         $fn = $this->fn($fn);
         $new = array();
         foreach( $this->container as $key => $value ) {
@@ -116,6 +114,7 @@ class OodbArray implements arrayaccess, Iterator {
     }
     
     public function reduce($fn, $memo) {
+        $this->isCalled();
         foreach( $this->container as $key => $value ) {
             $memo = $fn($memo, $value, $key, $this->container);
         }
@@ -123,6 +122,7 @@ class OodbArray implements arrayaccess, Iterator {
     }
     
     public function filter($fn = null) {
+        $this->isCalled();
         $fn = $this->fn($fn);
         $new = array();
         foreach( $this->container as $key => $value ) {
@@ -133,6 +133,7 @@ class OodbArray implements arrayaccess, Iterator {
     }
         
     public function reject($fn = null) { // Opposite of filter
+        $this->isCalled();
         $fn = $this->fn($fn);
         $new = array();
         foreach( $this->container as $key => $value ) {
@@ -143,7 +144,14 @@ class OodbArray implements arrayaccess, Iterator {
     }
     
     public function toArray() {
+        $this->isCalled();
         return iterator_to_array($this->container);
+    }
+    
+    /* My own additions */
+    public function print_r($donotprint = false) {
+      $this->isCalled();
+      print_r($this->container, $true);
     }
 }
 
