@@ -155,4 +155,19 @@ $table->delete(array(
 
 Documentation
 ===
+Update:
+You can use update using
+```php
+$table->update($where, $new);
+```
+So in the previous example, if I would like to set the age of everybody with the firstname "Markus" to 1337, I would do
+You can also update using
+```php
+$table->update(array(
+  'firstname' => 'Markus'
+), array(
+  'age' => 1337
+));
+```
+
 I'm writing a [api reference](https://github.com/dralletje/OODB/wiki/Api-reference) soon :)
