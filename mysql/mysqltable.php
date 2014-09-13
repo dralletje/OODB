@@ -104,9 +104,8 @@ class MysqlTable extends OodbDatabaseTable {
         $isfirst = true;
 
         foreach($info as $field => $value) {
-           if(!array_key_exists(strtolower($field),$this->fields)) {
-               throw new Exception("wrong row used in '.insert()'; row {$name} does not exist in table {$this->name}.");
-           }
+           if(!array_key_exists(strtolower($field),$this->fields))
+               throw new Exception("wrong row used in '.insert()'; row {$field} does not exist in table {$this->name}.");
 
            if($this->fields[$field]['extra'] === "auto_increment") {
                continue;
