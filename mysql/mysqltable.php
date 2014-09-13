@@ -193,9 +193,9 @@ class MysqlTable extends OodbDatabaseTable {
         $id = $this->connection->insert_id;
         return $id;
     }
-    
-    public function delete($infoarray) {    
-        $where = $this->database->createWhereClausule($info, $this);
+
+    public function delete($infoarray) {
+        $where = SqlHelper::createWhereClausule($infoarray, $this);
         $bind_param_args = $where['bind_param'];
         $whereclausule = $where['where_clausule'];
         
@@ -204,8 +204,8 @@ class MysqlTable extends OodbDatabaseTable {
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
             throw new Exception(mysqli_error($this->connection));
         }
-        
-        call_user_func_array(array($mysqli_exec, 'bind_param'), $bind_param_args);
+
+        call_user_func_array(array($mysqli_exec, 'bind_param'), makeValuesReferenced($bind_param_args));
         $mysqli_exec->execute();
 
         $id = $this->connection->insert_id;
