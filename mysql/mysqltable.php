@@ -190,8 +190,8 @@ class MysqlTable extends OodbDatabaseTable {
         
         call_user_func_array(array($mysqli_exec, 'bind_param'), makeValuesReferenced($bind_param_args));
         $mysqli_exec->execute();
-        $id = $this->connection->insert_id;
-        return $id;
+        $rows = $this->connection->affected_rows;
+        return $rows;
     }
 
     public function delete($infoarray) {
