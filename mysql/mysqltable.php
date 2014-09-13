@@ -134,18 +134,18 @@ class MysqlTable extends OodbDatabaseTable {
         $func_args = array_merge(array($types), $params);
         if (!$mysqli_exec = $this->connection->prepare($sql_query)) {
             $this->lasterror = mysqli_error($this->connection);
-            return false;
+            throw new Exception(mysqli_error($this->connection));
         }
         
         call_user_func_array(array($mysqli_exec, 'bind_param'), $func_args);
         $mysqli_exec->execute();
 
         $id = $this->connection->insert_id;
-        if($id === 0) {
+        /*if($id === 0) {
             $this->lasterror = mysqli_error($this->connection);
-            return false;
-        }
-      
+            throw new Exception(mysqli_error($this->connection));
+        }*/
+
         return $id;
     }
 
